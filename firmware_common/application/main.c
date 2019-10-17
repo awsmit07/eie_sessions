@@ -96,6 +96,8 @@ void main(void)
   SystemStatusReport();
   G_u32SystemFlags &= ~_SYSTEM_INITIALIZING;
   
+  int led_on = 0;
+  
   /* Super loop */  
   while(1)
   {
@@ -132,9 +134,9 @@ void main(void)
     UserApp3RunActiveState();
         
     /* System sleep */
-    HEARTBEAT_OFF();
+    //HEARTBEAT_OFF();
     SystemSleep();
-    HEARTBEAT_ON();
+    //HEARTBEAT_ON();
     
   } /* end while(1) main super loop */
   
