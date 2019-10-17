@@ -39,6 +39,8 @@ PROTECTED FUNCTIONS
 
 #include "configuration.h"
 
+#define U16_COUNTER_PERIOD_MS (u16)500
+
 /***********************************************************************************************************************
 Global variable definitions with scope across entire project.
 All Global variable names shall start with "G_<type>UserApp1"
@@ -140,7 +142,25 @@ State Machine Function Definitions
 /* What does this state do? */
 static void UserApp1SM_Idle(void)
 {
-    
+    static u16 u16_counter = 0;
+    static int light_on = 0;
+    u16_counter++;
+
+    if(u16_counter == U16_COUNTER_PERIOD_MS)
+    {
+      u16_counter = 0;
+      if(light_on)
+      {
+        light_on = 0;
+        HEARTBEAT_OFF();
+      }
+      else
+      {
+        light_on = 1;
+        HEARTBEAT_ON();
+      }
+      
+    }
 } /* end UserApp1SM_Idle() */
      
 
