@@ -151,7 +151,9 @@ static void UserApp1SM_Idle(void)
     if(u16_counter % LED_CYCLE == 0)
     {
       u16_slow_counter++;
-      LedOn(u16_slow_counter % 8);
+      char cur_led = u16_slow_counter % 8;
+      //LedOn(cur_led);
+      LedPWM(cur_led, LED_PWM_100 - 2*RED + 2*cur_led);
       LedOff(u16_slow_counter % 8 -1);
       char str [5];
       if(u16_slow_counter % 8 == 0)
