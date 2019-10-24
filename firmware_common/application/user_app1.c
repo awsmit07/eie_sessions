@@ -38,8 +38,10 @@ PROTECTED FUNCTIONS
 **********************************************************************************************************************/
 
 #include "configuration.h"
+#include <stdio.h>
 
 #define U16_COUNTER_PERIOD_MS (u16)500
+#define LED_CYCLE 100
 
 /***********************************************************************************************************************
 Global variable definitions with scope across entire project.
@@ -143,9 +145,24 @@ State Machine Function Definitions
 static void UserApp1SM_Idle(void)
 {
     static u16 u16_counter = 0;
+    static u16 u16_slow_counter = -1;
     static int light_on = 0;
     u16_counter++;
-
+    if(u16_counter % LED_CYCLE == 0)
+    {
+      u16_slow_counter++;
+      LedOn(u16_slow_counter % 8);
+      LedOff(u16_slow_counter % 8 -1);
+      char str [5];
+      if(u16_slow_counter % 8 == 0)
+        LedOff(7);
+      
+      //sprintf(str, "%d %d\n", u16_slow_counter % 8, u16_slow_counter % 8 -1);
+      
+      //DebugPrintf(str);
+      
+    }
+    
     if(u16_counter == U16_COUNTER_PERIOD_MS)
     {
       u16_counter = 0;
