@@ -142,6 +142,57 @@ State Machine Function Definitions
 /* What does this state do? */
 static void UserApp1SM_Idle(void)
 {
+    // Acts as a pointer to the LED we are currently modifying
+    static int ptr_LED = WHITE; 
+    static unsigned char led_brightness[8] = {0};
+    static bool button_pressed[4] = {0};
+    
+    
+    // Detect Button Press
+    if(IsButtonPressed(BUTTON0) && !button_pressed[0])
+    {
+      button_pressed[0] = 1;
+      if(ptr_LED > WHITE)
+      {
+        ptr_LED--;
+      }
+      else
+      {
+        ptr_LED = RED;
+      }
+    }
+    if(IsButtonPressed(BUTTON1) && !button_pressed[1])
+    {
+      button_pressed[1] = 1;
+      if(ptr_LED < RED)
+      {
+        ptr_LED++;
+      }
+      else
+      {
+        ptr_LED = WHITE;
+      }
+    }
+    if(IsButtonPressed(BUTTON2) && !button_pressed[2])
+    {
+      button_pressed[2] = 1;
+      led_brightness[ptr_LED] = 0;
+    }
+    if(IsButtonPressed(BUTTON3) && !button_pressed[3])
+    {
+      button_pressed[3] = 1;
+      led_brightness[ptr_LED] = 1;
+    }
+    
+    // Detect Button Release
+    if(!IsButtonPressed(BUTTON0) && button_pressed[0]) button_pressed[0] = 0;
+    if(!IsButtonPressed(BUTTON1) && button_pressed[1]) button_pressed[1] = 0;
+    if(!IsButtonPressed(BUTTON2) && button_pressed[2]) button_pressed[2] = 0;
+    if(!IsButtonPressed(BUTTON3) && button_pressed[3]) button_pressed[3] = 0;
+    
+    for(int i = 0; i <= RED; i++)
+      led_brightness[i] ? LedOn(i): LedOff(i);
+    // Heart Beat LED
     static u16 u16_counter = 0;
     static int light_on = 0;
     u16_counter++;
@@ -162,7 +213,7 @@ static void UserApp1SM_Idle(void)
       
     }
 } /* end UserApp1SM_Idle() */
-     
+
 
 /*-------------------------------------------------------------------------------------------------------------------*/
 /* Handle an error */
