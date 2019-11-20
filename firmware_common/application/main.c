@@ -91,12 +91,12 @@ void main(void)
   UserApp1Initialize();
   UserApp2Initialize();
   UserApp3Initialize();
-
+  pass_init();
+  
   /* Exit initialization */
   SystemStatusReport();
   G_u32SystemFlags &= ~_SYSTEM_INITIALIZING;
   
-  int led_on = 0;
   
   /* Super loop */  
   while(1)
@@ -132,7 +132,8 @@ void main(void)
     UserApp1RunActiveState();
     UserApp2RunActiveState();
     UserApp3RunActiveState();
-        
+    main_pass();
+    
     /* System sleep */
     //HEARTBEAT_OFF();
     SystemSleep();
