@@ -5,8 +5,9 @@
 #include <stdio.h>
 typedef enum
 {
-    UNLOCKED = 1,
-    LOCKED = 0
+    LOCKED = 0,
+    UNLOCKED = 1
+    
 } PASSWORD_STATUS;
 
 void main_pass(void);

@@ -36,7 +36,35 @@ void main_pass()
     {
         change_digit(digits, cursor_pos);
     }
-
+    else if(status == UNLOCKED)
+    {
+        if(cursor_pos == 4 && (IsButtonPressed(BUTTON1) || IsButtonPressed(BUTTON2)))
+        {
+            password = digits_to_num(digits);
+            //u8 * debug;
+            //sprintf(debug, "password %d\n", password);
+            //DebugPrintf(debug);
+        }
+          
+        if(cursor_pos == 5 && (IsButtonPressed(BUTTON1) || IsButtonPressed(BUTTON2)))
+        {
+            status = LOCKED;
+            LcdCommand(LCD_CLEAR_CMD);
+            digits[0] = 0;
+            digits[1] = 0;
+            digits[2] = 0;
+            digits[3] = 0;
+            //DebugPrintf("Locked\n");
+        }
+    }
+    else if(status == LOCKED)
+    {
+        if(IsButtonPressed(BUTTON1) || IsButtonPressed(BUTTON2))
+        {
+            int test_value = digits_to_num(digits);
+            status = check_password(password, test_value);
+        }
+    }
     write_lcd(text, cursor_pos);
     //draw_cursor(cursor_pos);
     
@@ -57,13 +85,13 @@ int move_cursor(int cursor_pos, int cursor_max)
     {
         button_left_held = TRUE;
         dec_flag = TRUE;
-        DebugPrintf("Button 0 pressed");
+        //DebugPrintf("Button 0 pressed");
     }
     else if(IsButtonPressed(BUTTON3) && !button_right_held)
     {
         button_right_held = TRUE;
         inc_flag = TRUE;
-        DebugPrintf("Button 3 pressed");
+        //DebugPrintf("Button 3 pressed");
     }
 
 
