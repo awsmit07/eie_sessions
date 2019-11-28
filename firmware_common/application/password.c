@@ -1,8 +1,9 @@
-#include "password.h"
+
 #include "configuration.h"
 
 void main_pass()
 {
+    
     // Create a holder for the digits on the LCD
     static int digits[4] = {0, 0, 0, 0};
     // Create a password initially set to 0
@@ -13,18 +14,18 @@ void main_pass()
 
     static int cursor_pos = 0;
     int cursor_max;
-    char *text;
+    u8 text[7];
 
     set_status_led(status);
 
     if(status == UNLOCKED)
     {
-        text = sprintf("%04dSL", digits_to_num(digits));
+        sprintf(text, "%d%d%d%dSL", digits[3], digits[2], digits[1], digits[0]);
         cursor_max = 6;
     }
     else if(status == LOCKED)
     {
-        text = sprintf("%04dE", digits_to_num(digits));
+        sprintf(text, "%d%d%d%dE", digits[3], digits[2], digits[1], digits[0]);
         cursor_max = 5;
     }
 
@@ -35,44 +36,52 @@ void main_pass()
     {
         change_digit(digits, cursor_pos);
     }
+
+    write_lcd(text, cursor_pos);
+    //draw_cursor(cursor_pos);
+    
 }
 
 int move_cursor(int cursor_pos, int cursor_max)
 {
-    static int button_left_held = 0;
-    static int button_right_held = 0;
+    static bool button_left_held = FALSE;
+    static bool button_right_held = FALSE;
 
-    int dec_flag = 0;
-    int inc_flag = 0;
-
+    static bool dec_flag = FALSE;
+    static bool inc_flag = FALSE;
+    
+    
+    //DebugPrintf("Test");
     // Detect right and left button presses.
     if(IsButtonPressed(BUTTON0) && !button_left_held)
     {
-        button_left_held = 1;
-        dec_flag = 1;
+        button_left_held = TRUE;
+        dec_flag = TRUE;
+        DebugPrintf("Button 0 pressed");
     }
     else if(IsButtonPressed(BUTTON3) && !button_right_held)
     {
-        button_right_held = 1;
-        inc_flag = 1;
+        button_right_held = TRUE;
+        inc_flag = TRUE;
+        DebugPrintf("Button 3 pressed");
     }
 
 
     // Detect release of buttons
-    if(!IsButtonPressed(BUTTON0) && button_left_held)
+    if(!IsButtonPressed(BUTTON0))
     {
-        button_left_held = 0;
+        button_left_held = FALSE;
     }
-    if(!IsButtonPressed(BUTTON3) && button_right_held)
+    if(!IsButtonPressed(BUTTON3))
     {
-        button_right_held = 0;
+        button_right_held = FALSE;
     }
 
     // Increment Cursor if applicable
     if(inc_flag)
     {
         cursor_pos = (cursor_pos + 1) % cursor_max;
-        inc_flag = 0;
+        inc_flag = FALSE;
     }
     // Decrement Cursor if applicable
     if(dec_flag)
@@ -81,57 +90,61 @@ int move_cursor(int cursor_pos, int cursor_max)
         cursor_pos = !cursor_pos ? cursor_max: cursor_pos;
         // Decrement cursor postion
         cursor_pos--;
-        dec_flag = 0;
+        dec_flag = FALSE;
     }
-
+    //u8 debug[3];
+    //sprintf(debug, "%d\n\r", cursor_pos);
+    //DebugPrintf(debug);
     return cursor_pos;
 }
 
-void change_digit(digits, cursor_pos)
+void change_digit(int *digits, int cursor_pos)
 {
-    static int button_down_held = 0;
-    static int button_up_held = 0;
+    static bool button_down_held = FALSE;
+    static bool button_up_held = FALSE;
 
-    int dec_flag = 0;
-    int inc_flag = 0;
+    bool dec_flag = FALSE;
+    bool inc_flag = FALSE;
 
     // Detect right and left button presses.
     if(IsButtonPressed(BUTTON1) && !button_down_held)
     {
-        button_down_held = 1;
-        dec_flag = 1;
+        button_down_held = TRUE;
+        dec_flag = TRUE;
+        DebugPrintf("Button 1 pressed");
     }
-    else if(IsButtonPressed(BUTTON2) && !button_up_held)
+    if(IsButtonPressed(BUTTON2) && !button_up_held)
     {
-        button_up_held = 1;
-        inc_flag = 1;
+        button_up_held = TRUE;
+        inc_flag = TRUE;
+        DebugPrintf("Button 2 pressed");
     }
 
 
     // Detect release of buttons
     if(!IsButtonPressed(BUTTON1) && button_down_held)
     {
-        button_left_held = 0;
+        button_down_held = FALSE;
     }
     if(!IsButtonPressed(BUTTON2) && button_up_held)
     {
-        button_right_held = 0;
+        button_up_held = FALSE;
     }
 
     // Increment Cursor if applicable
     if(inc_flag)
     {
-        digits[cursor_pos] = (digits[cursor_pos] + 1) % 10;
-        inc_flag = 0;
+        digits[3 - cursor_pos] = (digits[3 - cursor_pos] + 1) % 10;
+        inc_flag = FALSE;
     }
     // Decrement Cursor if applicable
     if(dec_flag)
     {
         // Check if the cursor position is currently 0
-        digits[cursor_pos] = !digits[cursor_pos] ? 10: digits[cursor_pos];
+        digits[3 - cursor_pos] = !digits[3 - cursor_pos] ? 10: digits[3 - cursor_pos];
         // Decrement cursor postion
-        cursor_pos--;
-        dec_flag = 0
+        digits[3 - cursor_pos]--;
+        dec_flag = FALSE;
     }
 }
 
@@ -140,10 +153,27 @@ int check_password(int password, int entered_value)
     return (password == entered_value)? 1: 0;
 }
 
-void draw_cursor(int cursor_pos)
+
+void write_lcd(u8 * message, int cursor_pos)
 {
-    LCDCommand(LCD_ADDRESS_CMD | cursor_pos);
-    LCDCommand(LCD_DISPLAY_CMD | LCD_DISPLAY_CURSOR);
+    static u16 lcd_count = 0;
+    static u8 past_cursor = 0;
+    
+    lcd_count++;
+    if(lcd_count == 50)
+    {
+        LcdMessage(LINE1_START_ADDR, message);
+        if(past_cursor != cursor_pos)
+        {
+            LcdCommand(LCD_CLEAR_CMD);
+            LcdMessage(LINE2_START_ADDR + cursor_pos, "^");
+            past_cursor = cursor_pos;
+        }
+        LcdCommand(LCD_HOME_CMD);
+        lcd_count = 0;
+        //DebugPrintf("LCD Display update");
+    }
+    
 }
 
 void pass_init()
@@ -151,7 +181,8 @@ void pass_init()
     LedOff(LCD_RED);
     LedOff(LCD_GREEN);
     LedOff(LCD_BLUE);
-    LCDCommand(LCD_CLEAR_CMD);
+    LcdCommand(LCD_CLEAR_CMD);
+    LcdMessage(LINE2_START_ADDR, "^");
 }
 
 

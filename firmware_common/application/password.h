@@ -2,7 +2,7 @@
 #define PASSWORD
 
 #include <string.h>
-
+#include <stdio.h>
 typedef enum
 {
     UNLOCKED = 1,
@@ -13,7 +13,7 @@ void main_pass(void);
 
 void pass_init(void);
 
-void write_lcd(const char * message);
+void write_lcd(u8 * message, int cursor_pos);
 /*
 * Writes the message 'message' to the LCD display
 */
@@ -27,9 +27,9 @@ void lock(int *digits);
 
 int set_password(int new_password);
 
-int check_password(int password, int entered value);
+int check_password(int password, int entered_value);
 
 int move_cursor(int cursor_pos, int cursor_max);
 
-void change_digit(digits, cursor_pos);
+void change_digit(int *digits, int cursor_pos);
 #endif
