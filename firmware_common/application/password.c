@@ -188,7 +188,7 @@ void write_lcd(u8 * message, int cursor_pos)
     static u8 past_cursor = 0;
     
     lcd_count++;
-    if(lcd_count == 50)
+    if(lcd_count == 100)
     {
         LcdMessage(LINE1_START_ADDR, message);
         if(past_cursor != cursor_pos)
