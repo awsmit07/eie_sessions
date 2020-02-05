@@ -96,7 +96,6 @@ void main(void)
   SystemStatusReport();
   G_u32SystemFlags &= ~_SYSTEM_INITIALIZING;
   
-  int led_on = 0;
   
   /* Super loop */  
   while(1)
