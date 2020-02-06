@@ -179,7 +179,64 @@ State Machine Function Definitions
 /* What does this state do? */
 static void UserApp1SM_Idle(void)
 {
-    
+  // Message to send
+  static u8 au8TestMessage[] = {0, 0, 0, 0, 0xA5, 0, 0, 0};
+  
+  u8 au8DataContent[] = "xxxxxxxx";
+  
+  if( AntReadAppMessageBuffer() )
+  {
+     /* New message from ANT task: check what it is */
+    if(G_eAntApiCurrentMessageClass == ANT_DATA)
+    {
+      /* We got some data: parse it into au8DataContent */
+      for(u8 i = 0; i < ANT_DATA_BYTES; i++)
+      {
+          au8DataContent[i] = (char) G_au8AntApiCurrentMessageBytes[i];
+      }
+      LcdMessage(LINE2_START_ADDR, au8DataContent); 
+    }
+    else if(G_eAntApiCurrentMessageClass == ANT_TICK)
+    {
+      /* A channel period has gone by: typically this is when new data should be queued to be sent */
+      
+      //Set message to be sent
+        /* Check all the buttons and update au8TestMessage according to the button state */ 
+      au8TestMessage[0] = 0x00;
+      au8TestMessage[1] = 0x00;
+      au8TestMessage[2] = 0x00;
+      au8TestMessage[3] = 0x00;
+      if( IsButtonPressed(BUTTON0) )
+      {
+        au8TestMessage[0] = 0xff;
+      }
+      if( IsButtonPressed(BUTTON1) )
+      {
+        au8TestMessage[1] = 0xff;
+      }
+      if( IsButtonPressed(BUTTON2) )
+      {
+        au8TestMessage[2] = 0xff;
+      }
+      if( IsButtonPressed(BUTTON3) )
+      {
+        au8TestMessage[3] = 0xff;
+      }
+      
+      au8TestMessage[7]++;
+      if(au8TestMessage[7] == 0)
+      {
+        au8TestMessage[6]++;
+        if(au8TestMessage[6] == 0)
+        {
+          au8TestMessage[5]++;
+        }
+      }
+      
+      // Send Message
+      AntQueueBroadcastMessage(ANT_CHANNEL_USERAPP, au8TestMessage);
+    }
+  }
 } /* end UserApp1SM_Idle() */
      
 static void UserApp1SM_AntChannelAssign(void)
