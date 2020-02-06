@@ -65,7 +65,7 @@ Global variable definitions with scope limited to this local application.
 Variable names shall start with "UserApp1_<type>" and be declared as static.
 ***********************************************************************************************************************/
 static fnCode_type UserApp1_pfStateMachine;               /*!< @brief The state machine function pointer */
-//static u32 UserApp1_u32Timeout;                           /*!< @brief Timeout counter used across states */
+static u32 UserApp1_u32Timeout;                           /*!< @brief Timeout counter used across states */
 
 
 /**********************************************************************************************************************
@@ -177,25 +177,64 @@ State Machine Function Definitions
 /* What does this state do? */
 static void UserApp1SM_Idle(void)
 {
-    static u16 u16_counter = 0;
-    static int light_on = 0;
-    u16_counter++;
-
-    if(u16_counter == U16_COUNTER_PERIOD_MS)
+  // Message to send
+  static u8 au8TestMessage[] = {0, 0, 0, 0, 0xA5, 0, 0, 0};
+  
+  u8 au8DataContent[] = "xxxxxxxx";
+  
+  if( AntReadAppMessageBuffer() )
+  {
+     /* New message from ANT task: check what it is */
+    if(G_eAntApiCurrentMessageClass == ANT_DATA)
     {
-      u16_counter = 0;
-      if(light_on)
+      /* We got some data: parse it into au8DataContent */
+      for(u8 i = 0; i < ANT_DATA_BYTES; i++)
       {
-        light_on = 0;
-        HEARTBEAT_OFF();
+          au8DataContent[i] = (char) G_au8AntApiCurrentMessageBytes[i];
       }
-      else
+      LcdMessage(LINE2_START_ADDR, au8DataContent); 
+    }
+    else if(G_eAntApiCurrentMessageClass == ANT_TICK)
+    {
+      /* A channel period has gone by: typically this is when new data should be queued to be sent */
+      
+      //Set message to be sent
+        /* Check all the buttons and update au8TestMessage according to the button state */ 
+      au8TestMessage[0] = 0x00;
+      au8TestMessage[1] = 0x00;
+      au8TestMessage[2] = 0x00;
+      au8TestMessage[3] = 0x00;
+      if( IsButtonPressed(BUTTON0) )
       {
-        light_on = 1;
-        HEARTBEAT_ON();
+        au8TestMessage[0] = 0xff;
+      }
+      if( IsButtonPressed(BUTTON1) )
+      {
+        au8TestMessage[1] = 0xff;
+      }
+      if( IsButtonPressed(BUTTON2) )
+      {
+        au8TestMessage[2] = 0xff;
+      }
+      if( IsButtonPressed(BUTTON3) )
+      {
+        au8TestMessage[3] = 0xff;
       }
       
+      au8TestMessage[7]++;
+      if(au8TestMessage[7] == 0)
+      {
+        au8TestMessage[6]++;
+        if(au8TestMessage[6] == 0)
+        {
+          au8TestMessage[5]++;
+        }
+      }
+      
+      // Send Message
+      AntQueueBroadcastMessage(ANT_CHANNEL_USERAPP, au8TestMessage);
     }
+  }
 } /* end UserApp1SM_Idle() */
      
 
