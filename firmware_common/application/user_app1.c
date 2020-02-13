@@ -39,7 +39,7 @@ PROTECTED FUNCTIONS
 
 #include "configuration.h"
 
-#define U16_COUNTER_PERIOD_MS (u16)500
+
 
 /***********************************************************************************************************************
 Global variable definitions with scope across entire project.
@@ -59,6 +59,8 @@ extern u32 G_u32AntApiCurrentMessageTimeStamp;            /*!< From ant_api.c */
 extern AntApplicationMessageType G_eAntApiCurrentMessageClass;    
 extern u8 G_au8AntApiCurrentMessageBytes[ANT_APPLICATION_MESSAGE_BYTES];  
 extern AntExtendedDataType G_sAntApiCurrentMessageExtData;
+
+
 
 /***********************************************************************************************************************
 Global variable definitions with scope limited to this local application.
@@ -237,6 +239,21 @@ static void UserApp1SM_Idle(void)
   }
 } /* end UserApp1SM_Idle() */
      
+static void UserApp1SM_AntChannelAssign(void)
+{
+  if(AntRadioStatusChannel(ANT_CHANNEL_USERAPP) == ANT_CONFIGURED)
+  {
+    //DebugPrintf("Channel is opened");
+    // Channel assignment is successful
+    AntOpenChannelNumber(ANT_CHANNEL_USERAPP);
+    UserApp1_pfStateMachine = UserApp1SM_Idle;
+  }
+  if(IsTimeUp(&UserApp1_u32Timeout, 3000))
+  {
+     DebugPrintf("Ant Error occured");
+     UserApp1_pfStateMachine = UserApp1SM_Error;
+  }
+}
 
 static void UserApp1SM_AntChannelAssign(void)
 {

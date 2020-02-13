@@ -21,6 +21,7 @@ To start a new task using this user_app2 as a template:
 GLOBALS
 - NONE
 
+
 CONSTANTS
 - NONE
 
