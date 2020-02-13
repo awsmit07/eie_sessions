@@ -95,7 +95,14 @@ Promises:
 */
 void UserApp1Initialize(void)
 {
+  u8* au8_welcome_message = "ANT master";
   
+  // Set a message on the LCD
+  LcdCommand(LCD_CLEAR_CMD);
+  for(u16 i = 0; i<10000; i++);
+  LcdMessage(LINE1_START_ADDR, au8_welcome_message);
+  
+  AntAssignChannelInfoType UserApp1_sChannelInfo;
   
   // Configure ANT for application
   UserApp1_sChannelInfo.AntChannel = ANT_CHANNEL_USERAPP;
@@ -116,7 +123,21 @@ void UserApp1Initialize(void)
   {
     UserApp1_sChannelInfo.AntNetworkKey[i] = ANT_DEFAULT_NETWORK_KEY;
   }
-
+  
+    /* Attempt to queue the ANT channel setup */
+  if( AntAssignChannel(&UserApp1_sChannelInfo) )
+  {
+    UserApp1_u32Timeout = G_u32SystemTime1ms;
+    UserApp1_pfStateMachine  = UserApp1SM_AntChannelAssign;
+  }
+  else
+  {
+    /* The task isn't properly initialized, so shut it down and don't run */
+    DebugPrintf("Ant failed to initialize");
+    UserApp1_pfStateMachine  = UserApp1SM_AntChannelAssign;
+  }
+  
+  
 } /* end UserApp1Initialize() */
 
   
@@ -157,6 +178,23 @@ static void UserApp1SM_Idle(void)
     
 } /* end UserApp1SM_Idle() */
      
+
+static void UserApp1SM_AntChannelAssign(void)
+{
+  if(AntRadioStatusChannel(ANT_CHANNEL_USERAPP) == ANT_CONFIGURED)
+  {
+    //DebugPrintf("Channel is opened");
+    // Channel assignment is successful
+    AntOpenChannelNumber(ANT_CHANNEL_USERAPP);
+    UserApp1_pfStateMachine = UserApp1SM_Idle;
+  }
+  if(IsTimeUp(&UserApp1_u32Timeout, 3000))
+  {
+     DebugPrintf("Ant Error occured");
+     UserApp1_pfStateMachine = UserApp1SM_Error;
+  }
+}
+
 
 /*-------------------------------------------------------------------------------------------------------------------*/
 /* Handle an error */
