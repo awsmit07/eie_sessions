@@ -1,10 +1,10 @@
 /*!
-@file exceptions.h 
+@file exceptions.h
 @brief Atmel-supplied header file for exceptions.c
 */
 
 /* ----------------------------------------------------------------------------
- *         ATMEL Microcontroller Software Support 
+ *         ATMEL Microcontroller Software Support
  * ----------------------------------------------------------------------------
  * Copyright (c) 2008, Atmel Corporation
  *
@@ -41,7 +41,7 @@
 //         Types
 //------------------------------------------------------------------------------
 
-/*! 
+/*!
 @enum IntFunc
 @brief Function pointer defintion for interrupt handler functions.
 */
