@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "*.jinja": "jinja",
+        "sam3u2c.h": "c",
+        "stdint.h": "c",
+        "random": "c"
+    }
+}
