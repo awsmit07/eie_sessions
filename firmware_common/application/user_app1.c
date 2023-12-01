@@ -1,5 +1,5 @@
 /*!*********************************************************************************************************************
-@file user_app1.c                                                                
+@file user_app1.c
 @brief User's tasks / applications are written here.  This description
 should be replaced by something specific to the task.
 
@@ -68,13 +68,13 @@ Function Definitions
 **********************************************************************************************************************/
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-/*! @publicsection */                                                                                            
+/*! @publicsection */
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-/*! @protectedsection */                                                                                            
+/*! @protectedsection */
 /*--------------------------------------------------------------------------------------------------------------------*/
-
+static void cycleLEDs(void);
 /*!--------------------------------------------------------------------------------------------------------------------
 @fn void UserApp1Initialize(void)
 
@@ -102,10 +102,12 @@ void UserApp1Initialize(void)
     /* The task isn't properly initialized, so shut it down and don't run */
     UserApp1_pfStateMachine = UserApp1SM_Error;
   }
-
+  LedOff(LCD_RED);
+  LedOff(LCD_GREEN);
+  LedOff(LCD_BLUE);
 } /* end UserApp1Initialize() */
 
-  
+
 /*!----------------------------------------------------------------------------------------------------------------------
 @fn void UserApp1RunActiveState(void)
 
@@ -129,7 +131,7 @@ void UserApp1RunActiveState(void)
 
 
 /*------------------------------------------------------------------------------------------------------------------*/
-/*! @privatesection */                                                                                            
+/*! @privatesection */
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 
@@ -140,15 +142,142 @@ State Machine Function Definitions
 /* What does this state do? */
 static void UserApp1SM_Idle(void)
 {
-    
+  debug_printf("Hello World %d!\n", 1);
+  if(IsButtonPressed(BUTTON0) && G_u32SystemTime1ms % 10 < 5)
+  {
+    PWMAudioSetFrequency(BUZZER1, 200);
+    PWMAudioOn(BUZZER1);
+  }
+  else
+  {
+    PWMAudioOff(BUZZER1);
+  }
+  if(IsButtonPressed(BUTTON1) && G_u32SystemTime1ms % 10 >= 5)
+  {
+    PWMAudioSetFrequency(BUZZER1, 253);
+    PWMAudioOn(BUZZER1);
+  }
+  else
+  {
+    PWMAudioOff(BUZZER1);
+  }
+  if (IsButtonPressed(BUTTON2) && G_u32SystemTime1ms % 10 < 5)
+  {
+    PWMAudioSetFrequency(BUZZER2, 300);
+    PWMAudioOn(BUZZER2);
+  }
+  else
+  {
+    PWMAudioOff(BUZZER2);
+  }
+  if (IsButtonPressed(BUTTON3) && G_u32SystemTime1ms % 10 >= 5)
+  {
+    PWMAudioSetFrequency(BUZZER2, 400);
+    PWMAudioOn(BUZZER2);
+  }
+  else
+  {
+    PWMAudioOff(BUZZER2);
+  }
+
+  static u8 counter[3] = {0, 0, 0};
+  static LedNameType led = LCD_RED;
+  static bool increasing = TRUE;
+  if(G_u32SystemTime1ms % 200 == 0)
+  {
+    if(increasing)
+    {
+      LedPWM(led, counter[led-LCD_RED]);
+
+      if(counter[led-LCD_RED] == 20)
+      {
+        if(led == LCD_BLUE)
+        {
+          increasing = FALSE;
+          led = LCD_RED;
+        }
+        else
+        {
+          led++;
+        }
+      }
+      else
+      {
+        counter[led-LCD_RED]++;
+      }
+    }
+    else
+    {
+      LedPWM(led, counter[led-LCD_RED]);
+
+      if(counter[led-LCD_RED] == 0)
+      {
+        if(led == LCD_BLUE)
+        {
+          increasing = TRUE;
+          led = LCD_RED;
+        }
+        else
+        {
+          led++;
+        }
+      }
+      else
+      {
+        counter[led-LCD_RED]--;
+      }
+    }
+  }
 } /* end UserApp1SM_Idle() */
-     
+
+static void cycleLEDs(void)
+{
+  static u8 led_counter = 0;
+
+  switch (led_counter % 8)
+  {
+  case WHITE:
+    LedOn(WHITE);
+    LedOff(RED);
+    break;
+  case PURPLE:
+    LedOn(PURPLE);
+    LedOff(WHITE);
+    break;
+  case BLUE:
+    LedOn(BLUE);
+    LedOff(PURPLE);
+    break;
+  case CYAN:
+    LedOn(CYAN);
+    LedOff(BLUE);
+    break;
+  case GREEN:
+    LedOn(GREEN);
+    LedOff(CYAN);
+    break;
+  case YELLOW:
+    LedOn(YELLOW);
+    LedOff(GREEN);
+    break;
+  case ORANGE:
+    LedOn(ORANGE);
+    LedOff(YELLOW);
+    break;
+  case RED:
+    LedOn(RED);
+    LedOff(ORANGE);
+    break;
+  }
+    led_counter++;
+
+}
 
 /*-------------------------------------------------------------------------------------------------------------------*/
 /* Handle an error */
-static void UserApp1SM_Error(void)          
+static void UserApp1SM_Error(void)
 {
-  
+
 } /* end UserApp1SM_Error() */
 
 
