@@ -168,6 +168,8 @@ Promises:
 void LedOff(LedNameType eLED_)
 {
   u32 *pu32OffAddress;
+  
+  pu32OffAddress = 0;
 
   /* Configure set and clear addresses */
   pu32OffAddress = 0;
