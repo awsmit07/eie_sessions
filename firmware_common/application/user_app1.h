@@ -32,14 +32,18 @@ Function Declarations
 /*--------------------------------------------------------------------------------------------------------------------*/
 #define ANT_CHANNEL_TYPE_USERAPP CHANNEL_TYPE_MASTER
 #define ANT_CHANNEL_USERAPP             ANT_CHANNEL_0         // Channel 0 - 7
-#define ANT_CHANNEL_PERIOD_LO_USERAPP   (u8)0x00              // LO; 0x0001 - 0x7fff
-#define ANT_CHANNEL_PERIOD_HI_USERAPP   (u8)0x20              // HI; 0x0001 - 0x7fff
-#define ANT_DEVICEID_LO_USERAPP         (u8)0xCA              // Device # Low byte
-#define ANT_DEVICEID_HI_USERAPP         (u8)0x15              // Device # High byte
-#define ANT_DEVICE_TYPE_USERAPP         (u8)1                 // 1 - 255
-#define ANT_TRANSMISSION_TYPE_USERAPP   (u8)1                 // 1-127; MSB is pairing
-#define ANT_FREQUENCY_USERAPP           (u8)50                // 2400MHz + 0 - 99 MHz
+#define ANT_CHANNEL_PERIOD_LO_USERAPP   (u8)0x86              // LO; 0x0001 - 0x7fff
+#define ANT_CHANNEL_PERIOD_HI_USERAPP   (u8)0x1F              // HI; 0x0001 - 0x7fff
+#define ANT_DEVICEID_LO_USERAPP         (u8)0x4F              // Device # Low byte
+#define ANT_DEVICEID_HI_USERAPP         (u8)0x46              // Device # High byte
+#define ANT_DEVICE_TYPE_USERAPP         (u8)120               // 1 - 255
+#define ANT_TRANSMISSION_TYPE_USERAPP   (u8)0                 // 1-127; MSB is pairing
+#define ANT_FREQUENCY_USERAPP           (u8)57                // 2400MHz + 0 - 99 MHz
 #define ANT_TX_POWER_USERAPP            RADIO_TX_POWER_4DBM   // Max tx power
+#define ANT_PLUS_KEY                    {0} // ANT plus network key
+#define TIMEOUT_VALUE                   10000                 // timeout in ms
+#include <string.h>
+#include <stdio.h>
 
 /*------------------------------------------------------------------------------------------------------------------*/
 /*! @protectedsection */                                                                                            
@@ -59,6 +63,9 @@ State Machine Declarations
 static void UserApp1SM_Idle(void);    
 static void UserApp1SM_Error(void);         
 
+static void UserAppSM_WaitChannelOpen(void);
+static void UserAppSM_WaitChannelClose(void);
+static void UserAppSM_ChannelOpen(void);
 
 
 /**********************************************************************************************************************
