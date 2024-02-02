@@ -1,6 +1,6 @@
 /*!********************************************************************************************************************
-@file ant.h                                                                
-@brief Header file for ANT implementation for Cortex-M3 / nRF51422 with AP2 network processor 
+@file ant.h
+@brief Header file for ANT implementation for Cortex-M3 / nRF51422 with AP2 network processor
 SPI EiE Razor development board
 **********************************************************************************************************************/
 
@@ -15,31 +15,31 @@ Run time switches
 /**********************************************************************************************************************
 Type definitions
 **********************************************************************************************************************/
-/*! 
+/*!
 @enum AntChannelStatusType
-@brief Enum to define the status of an ANT channel 
+@brief Enum to define the status of an ANT channel
 */
-typedef enum {ANT_UNCONFIGURED = 0, ANT_CONFIGURED = 1, ANT_OPENING = 2, 
+typedef enum {ANT_UNCONFIGURED = 0, ANT_CONFIGURED = 1, ANT_OPENING = 2,
               ANT_OPEN = 3, ANT_CLOSING = 4, ANT_CLOSED = 1} AntChannelStatusType;
 
-/*! 
+/*!
 @enum AntApplicationMessageType
-@brief Enum to define the type of message in the ANT API information buffer 
+@brief Enum to define the type of message in the ANT API information buffer
 */
 typedef enum {ANT_EMPTY, ANT_DATA, ANT_TICK} AntApplicationMessageType;
 
-/*! 
+/*!
 @enum AntChannelNumberType
-@brief Enum to specify an ANT channel 
+@brief Enum to specify an ANT channel
 */
 typedef enum {ANT_CHANNEL_0 = 0, ANT_CHANNEL_1, ANT_CHANNEL_2, ANT_CHANNEL_3,
               ANT_CHANNEL_4, ANT_CHANNEL_5, ANT_CHANNEL_6, ANT_CHANNEL_7,
               ANT_CHANNEL_SCANNING = 0} AntChannelNumberType;
 
-/*! 
+/*!
 @struct AntAssignChannelInfoType
 @brief Data struct to fully configure an ANT channel */
-typedef struct 
+typedef struct
 {
   AntChannelNumberType AntChannel;         /*!< @brief The ANT channel number */
   u8 AntChannelType;                       /*!< @brief ANT channel type from antdefines.h line 75 */
@@ -64,9 +64,9 @@ typedef struct
 #define _ANT_FLAGS_GOT_ACK                (u8)0x10               /* Set when an Acked data message gets acked */
 
 
-/*! 
+/*!
 @struct AntExtendedDataType
-@brief Data struct for extended data information 
+@brief Data struct for extended data information
 */
 typedef struct
 {
@@ -82,9 +82,9 @@ typedef struct
 
 #define ANT_APPLICATION_MESSAGE_BYTES       (u8)8
 
-/*! 
+/*!
 @struct AntApplicationMsgListType
-@brief Data struct for the ANT application API message information 
+@brief Data struct for the ANT application API message information
 */
 typedef struct
 {
@@ -97,7 +97,7 @@ typedef struct
 } AntApplicationMsgListType;
 
 
-/*! 
+/*!
 @struct AntOutgoingMessageListType
 @brief Data struct for outgoing data messages */
 typedef struct
@@ -105,10 +105,10 @@ typedef struct
   u32 u32TimeStamp;                        /*!< @brief Current G_u32SystemTime1s */
   u8 au8MessageData[MESG_MAX_SIZE];        /*!< @brief Array for message data */
   void *psNextMessage;                     /*!< @brief Pointer to next AntOutgoingMessageListType */
-} AntOutgoingMessageListType;   
+} AntOutgoingMessageListType;
 
 
-/*! 
+/*!
 @struct AntMessageResponseType
 @brief Data struct for an ANT response message */
 typedef struct
@@ -121,16 +121,16 @@ typedef struct
 
 
 /**********************************************************************************************************************
-Macros 
+Macros
 **********************************************************************************************************************/
 #define IS_SEN_ASSERTED()      (ANT_SSP_FLAGS & _SSP_CS_ASSERTED)   /*!< @brief Macro returns TRUE if SEN is asserted */
-#define ACK_SEN_ASSERTED()     (ANT_SSP_FLAGS &= ~_SSP_CS_ASSERTED) /*!< @brief Macro to clear the _SSP_CS_ASSERTED flag */         
+#define ACK_SEN_ASSERTED()     (ANT_SSP_FLAGS &= ~_SSP_CS_ASSERTED) /*!< @brief Macro to clear the _SSP_CS_ASSERTED flag */
 
 #define IS_MRDY_ASSERTED()     (ANT_MRDY_READ_REG == 0) /*!< @brief Macro returns TRUE if MRDY is asserted */
-#define SYNC_MRDY_ASSERT()     (ANT_MRDY_CLEAR_REG)     /*!< @brief Macro to assert MRDY */   
+#define SYNC_MRDY_ASSERT()     (ANT_MRDY_CLEAR_REG)     /*!< @brief Macro to assert MRDY */
 #define SYNC_MRDY_DEASSERT()   (ANT_MRDY_SET_REG)       /*!< @brief Macro to deassert MRDY */
 
-#define SYNC_SRDY_ASSERT()     (ANT_SRDY_CLEAR_REG)     /*!< @brief Macro to assert SRDY */       
+#define SYNC_SRDY_ASSERT()     (ANT_SRDY_CLEAR_REG)     /*!< @brief Macro to assert SRDY */
 #define SYNC_SRDY_DEASSERT()   (ANT_SRDY_SET_REG)       /*!< @brief Macro to deassert SRDY */
 
 #define ANT_RESET_ASSERT()     (ANT_RESET_CLEAR_REG)    /*!< @brief Macro to assert the ANT RESET signal */
@@ -193,21 +193,21 @@ Constants / Definitions
 /* #### end of default channel configuration parameters ####*/
 
 #define ANT_ACTIVITY_TIME_COUNT   (u32)10000    /* Value used in a while loop that is waiting for an activity to be completed */
-#define ANT_SRDY_DELAY            (u32)200      /* A loop-kill delay to provide guaranteed minimum space for SRDY messages */
+#define ANT_SRDY_DELAY            (u32)300      /* A loop-kill delay to provide guaranteed minimum space for SRDY messages */
 #define ANT_SRDY_PERIOD           (u32)20       /* A loop-kill delay to stretch the SRDY pulse out */
 
 
 /* Network number */
 #define ANT_NETWORK_NUMBER_BYTES  (u8)8
 #define ANT_DEFAULT_NETWORK_KEY   (u8)0
-#define N_0                       (u8)0         
-#define N_1                       (u8)0         
-#define N_2                       (u8)0         
-#define N_3                       (u8)0         
-#define N_4                       (u8)0         
-#define N_5                       (u8)0         
-#define N_6                       (u8)0         
-#define N_7                       (u8)0         
+#define N_0                       (u8)0
+#define N_1                       (u8)0
+#define N_2                       (u8)0
+#define N_3                       (u8)0
+#define N_4                       (u8)0
+#define N_5                       (u8)0
+#define N_6                       (u8)0
+#define N_7                       (u8)0
 
 /* Symbols for bytes in messages to help readability */
 #define CH                        (u8)0         /* Channel */
@@ -230,7 +230,7 @@ Function prototypes
 **********************************************************************************************************************/
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-/*! @publicsection */                                                                                            
+/*! @publicsection */
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* ANT Public Interface-layer Functions */
 u8 AntCalculateTxChecksum(u8* pu8Message_);
@@ -239,7 +239,7 @@ void AntDeQueueApplicationMessage(void);
 
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-/*! @protectedsection */                                                                                            
+/*! @protectedsection */
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* ANT Protected Interface-layer Functions */
 void AntInitialize(void);
@@ -250,7 +250,7 @@ void AntRxFlowControlCallback(void);
 
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-/*! @privatesection */                                                                                            
+/*! @privatesection */
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* ANT Private Interface-layer Functions */
 static bool AntTxMessage(u8 *pu8AntTxMessage_);

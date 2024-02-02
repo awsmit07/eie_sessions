@@ -38,6 +38,7 @@ PROTECTED FUNCTIONS
 **********************************************************************************************************************/
 
 #include "configuration.h"
+#include "antplus_key.h"
 
 /***********************************************************************************************************************
 Global variable definitions with scope across entire project.
@@ -113,7 +114,7 @@ void UserApp1Initialize(void)
 
   // Configure ANT for application
   sAntSetupData.AntChannel = ANT_CHANNEL_USERAPP;
-  sAntSetupData.AntChannelType = ANT_CHANNEL_TYPE_USERAPP;
+  sAntSetupData.AntChannelType = CHANNEL_TYPE_SLAVE;
   sAntSetupData.AntChannelPeriodLo  = ANT_CHANNEL_PERIOD_LO_USERAPP;
   sAntSetupData.AntChannelPeriodHi  = ANT_CHANNEL_PERIOD_HI_USERAPP;
 
@@ -125,6 +126,10 @@ void UserApp1Initialize(void)
   sAntSetupData.AntTxPower          = ANT_TX_POWER_USERAPP;
 
   sAntSetupData.AntNetwork = ANT_NETWORK_DEFAULT;
+  for (u8 i = 0; i< 8; i++)
+  {
+    sAntSetupData.AntNetworkKey[i] = au8_ANT_KEY[i];
+  }
 
   for(u8 i = 0; i < ANT_NETWORK_NUMBER_BYTES; i++)
   {
@@ -215,7 +220,7 @@ static void UserAppSM_ChannelOpen(void)
   static u8 au8TickMessage[] = "EVENT x\n\r";  /* "x" at index [6] will be replaced by the current code */
   static u8 au8DataContent[] = "xxxxxxxxxxxxxxxx";
   static u8 au8LastAntData[ANT_APPLICATION_MESSAGE_BYTES] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
-  static u8 au8TestMessage[] = {0, 0, 0, 0, 0xA5, 0, 0, 0};
+  // static u8 au8TestMessage[] = {0, 0, 0, 0, 0xA5, 0, 0, 0};
   bool bGotNewData;
 
 

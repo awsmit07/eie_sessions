@@ -9,3 +9,5 @@ doxygen/html
 
 # All build output
 /build/
+
+antplus_key.h
