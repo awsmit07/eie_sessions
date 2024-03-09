@@ -9,3 +9,6 @@ doxygen/html
 
 # All build output
 /build/
+
+# Ignore ANT+ Network key files
+antplus_key.h
