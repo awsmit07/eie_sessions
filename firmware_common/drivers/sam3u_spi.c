@@ -136,6 +136,9 @@ SpiPeripheralType* SpiRequest(SpiConfigurationType* psSpiConfig_)
   SPI_Peripheral0.pBaseAddress->SPI_CSR[2] = SPI0_CSR2_INIT;
   SPI_Peripheral0.pBaseAddress->SPI_CSR[3] = SPI0_CSR3_INIT;
 
+  /* Configure the CS pin to be driven by the peripheral rather than the PIO */
+  ((AT91PS_PIO) psSpiConfig_->pCsGpioAddress)->PIO_PDR = psSpiConfig_->u32CsPin;
+
   /* Special considerations for SPI Slaves */
   if(SPI_Peripheral0.eSpiMode == SPI_SLAVE)
   {
